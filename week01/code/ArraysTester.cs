@@ -40,13 +40,17 @@ public static class ArraysTester {
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
 
+        // First I need to create "result" as an array of "length" elements
         var result = new double[length];
 
+        // I am using a for loop to get the "length" multiples of "number"
         for (var i = 1; i < length+1; i++)
         {
+            // Storing the multiples of "number"
             result[i-1] = number * i;
         }
 
+        // Finaly return the array "result" containing the multiples of "number"
         return result; // replace this return statement with your own
     }
     
@@ -65,19 +69,30 @@ public static class ArraysTester {
         // step by step before you write the code. The plan should be clear enough that it could
         // be implemented by another person.
 
+        // First is necessary to know the "length" of the "data" list
         int length = data.Count;
+        
+        // A new "result" list is necessary to store the Rotate List
         List<int> results = new List<int>();
 
+        // This firs for loop starts in the "amount" element of the "data" list
         for (int i = amount-1; i < length; i++)
         {
-            results.Add(data[i]);
+            // Elements of the "data" list are added to the 
+            // "result" list from the "amount" element to the "length" element
+            results.Add(data[i]); 
         }
 
+        // This second for loop starts in the first element of the "data" list
+        // toward the the "amount-1" element of the "data" list
         for (int i = 0; i < amount-1; i++)
         {
+            // Elements of the "data" list are added to the 
+            // "result" list from the "first" element to the "amount-1" element
             results.Add(data[i]);
         }
 
+        // Finaly return the array "result" containing the the Rotate List
         return results;
 
     }
