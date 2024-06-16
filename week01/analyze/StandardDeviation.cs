@@ -20,6 +20,8 @@ public static class StandardDeviation {
             count += 1;
         }
 
+        Console.WriteLine($"{total}  {count}");
+
         var avg = total / count;
         var sumSquaredDifferences = 0.0;
         foreach (var number in numbers) {
@@ -41,6 +43,8 @@ public static class StandardDeviation {
                 count += 1;
             }
 
+            Console.WriteLine($"{total}  {count}");
+
             var avg = total / count;
             sumSquaredDifferences += Math.Pow(number - avg, 2);
             countNumbers += 1;
@@ -53,6 +57,9 @@ public static class StandardDeviation {
     private static double StandardDeviation3(int[] numbers) {
         var count = numbers.Length;
         var avg = (double)numbers.Sum() / count;
+
+        Console.WriteLine($"{numbers.Sum()}  {count}");
+
         var sumSquaredDifferences = 0.0;
         foreach (var number in numbers) {
             sumSquaredDifferences += Math.Pow(number - avg, 2);
