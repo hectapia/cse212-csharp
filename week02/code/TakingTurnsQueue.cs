@@ -1,5 +1,5 @@
 /// <summary>
-/// This queue is circular.  When people are added via add_person, then they are added to the 
+/// This queue is circular.  When people are added via AddPerson, then they are added to the 
 /// back of the queue (per FIFO rules).  When get_next_person is called, the next person
 /// in the queue is displayed and then they are placed back into the back of the queue.  Thus,
 /// each person stays in the queue and is given turns.  When a person is added to the queue, 
@@ -9,6 +9,11 @@
 /// </summary>
 public class TakingTurnsQueue {
     private readonly PersonQueue _people = new();
+
+    /// <Additions>
+    /// queueResult stores each person and is given turns
+    /// just to format the output.
+    public List<Person> queueResult = new List<Person>(); 
 
     public int Length => _people.Length;
 
@@ -34,12 +39,16 @@ public class TakingTurnsQueue {
             Console.WriteLine("No one in the queue.");
         else {
             Person person = _people.Dequeue();
+            // queueResult stores each person and is given turns
+            // just to format the output.
+            queueResult.Add(person);
             if (person.Turns > 1) {
                 person.Turns -= 1;
                 _people.Enqueue(person);
+            } else if (person.Turns <= 0) {
+                // For last and infinite turn
+                _people.Enqueue(person);
             }
-
-            Console.WriteLine(person.Name);
         }
     }
 

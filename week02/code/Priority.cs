@@ -8,23 +8,41 @@
         // Test Cases
 
         // Test 1
-        // Scenario: 
+        // Scenario: [Task 1 (Pri:2), Task 2 (Pri:5), Task 3 (Pri:3), Task 2 (Pri:7)]
         // Expected Result: 
-        Console.WriteLine("Test 1");
+        // value: Task 2
+        // High priority: 7
+        Console.WriteLine("Test 1, Values:");
 
-        // Defect(s) Found: 
+        priorityQueue.Enqueue("Task 1", 2);
+        priorityQueue.Enqueue("Task 2", 5);
+        priorityQueue.Enqueue("Task 3", 3);
+        priorityQueue.Enqueue("Task 2", 7);
+        Console.WriteLine(priorityQueue.ToString());
+        Console.WriteLine("=========");
+        var result = priorityQueue.Dequeue();
+
+
+        // Defect(s) Found: Defects were found, fixed and documented 
+        // in the Dequeue() method.
 
         Console.WriteLine("---------");
 
         // Test 2
-        // Scenario: 
-        // Expected Result: 
-        Console.WriteLine("Test 2");
+        // Scenario: [] empty queue
+        // Expected Result: Error message should be displayed
+        Console.WriteLine("Test 2, Values:");
 
-        // Defect(s) Found: 
+        Console.WriteLine(priorityQueue.ToString());
+        Console.WriteLine("=========");
+
+        result = priorityQueue.Dequeue();
+
+  
 
         Console.WriteLine("---------");
 
-        // Add more Test Cases As Needed Below
+        // Defect(s) Found: Defects were found, fixed and documented 
+        // in the Dequeue() method.
     }
 }

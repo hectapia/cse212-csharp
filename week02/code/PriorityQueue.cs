@@ -13,23 +13,29 @@
         _queue.Add(newNode);
     }
 
-    public String Dequeue() {
+    // A tuple is added to return a value and the priority.
+    public (string value, int highPriorityIndex) Dequeue() {
         if (_queue.Count == 0) // Verify the queue is not empty
         {
             Console.WriteLine("The queue is empty.");
-            return null;
+            return (null, -1);
         }
 
         // Find the index of the item with the highest priority to remove
         var highPriorityIndex = 0;
-        for (int index = 1; index < _queue.Count - 1; index++) {
+        // This loop was fixed to reach the entire size of the _queue
+        for (int index = 1; index <= _queue.Count - 1; index++) {
             if (_queue[index].Priority >= _queue[highPriorityIndex].Priority)
                 highPriorityIndex = index;
         }
 
-        // Remove and return the item with the highest priority
+        // Store and return the item with the highest priority
         var value = _queue[highPriorityIndex].Value;
-        return value;
+        var priority = _queue[highPriorityIndex].Priority;
+        Console.WriteLine($"value: {value}");
+        Console.WriteLine($"High priority: {priority}");
+        _queue.Clear();
+        return (value, priority);
     }
 
     public override string ToString() {
