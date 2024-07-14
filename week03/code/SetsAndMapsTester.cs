@@ -1,35 +1,106 @@
+using System;
+using System.Net.Http;
+using System.IO;
 using System.Text.Json;
+using System.Collections.Generic;
+
 
 public static class SetsAndMapsTester {
-    public static void Run() {
+
+    /// <summary>
+    /// Sets up the maze dictionary for problem 4
+    /// </summary>
+    private static Dictionary<(int, int), bool[]> SetupMazeMap() {
+
+
+        /// Defines a maze using a dictionary. The dictionary is provided by the
+        /// user when the Maze object is created. The dictionary will contain the
+        /// following mapping:
+        ///
+        /// (x,y) : [left, right, up, down]
+        ///
+        /// 'x' and 'y' are integers and represents locations in the maze.
+        /// 'left', 'right', 'up', and 'down' are boolean are represent valid directions
+        ///
+        /// If a direction is false, then we can assume there is a wall in that direction.
+        /// If a direction is true, then we can proceed.  
+        ///
+
+        var map = new Dictionary<(int, int), bool[]>();
+
+        // Initialize all Maze cells
+        for (int x = 1; x <= 6; x++) {
+            for (int y = 1; y <= 6; y++) {
+                map[(x, y)] = new bool[] { true, true, true, true };
+            }
+        }
+
+        // Set up Maze internal walls
+        var internalWalls = new List<(int, int)>
+        {
+            (3, 1), (3, 2), (3, 3), (4, 2), (6, 2), (1, 3),
+            (6, 4), (2, 5), (4, 5), (6, 5), (2, 6), (4, 6)
+        };
+
+        foreach (var wall in internalWalls) {
+            int x = wall.Item1;
+            int y = wall.Item2;
+
+            if (x > 1) map[(x - 1, y)][1] = false; // Right wall for left cell
+            if (x < 6) map[(x + 1, y)][0] = false; // Left wall for right cell
+            if (y > 1) map[(x, y - 1)][3] = false; // Bottom wall for upper cell
+            if (y < 6) map[(x, y + 1)][2] = false; // Top wall for lower cell
+        }
+
+        /// Set up outer walls & directions
+        ///              Top direction
+        ///                  [2]
+        /// Left direction [0] [1] Right direction
+        ///                  [3]
+        ///             Bottom direction
+        for (int x = 1; x <= 6; x++) {
+            map[(x, 1)][2] = false; // Top row
+            map[(x, 6)][3] = false; // Bottom row
+        }
+        for (int y = 1; y <= 6; y++) {
+            map[(1, y)][0] = false; // Left column
+            map[(6, y)][1] = false; // Right column
+        }
+
+        return map;
+    }
+
+
+    public static void Run() {   
         // Problem 1: Find Pairs with Sets
         Console.WriteLine("\n=========== Finding Pairs TESTS ===========");
-        DisplayPairs(new[] { "am", "at", "ma", "if", "fi" });
+        DisplaySymmetricPairs.DisplayPairs(new[] { "am", "at", "ma", "if", "fi" });
         // ma & am
         // fi & if
-        Console.WriteLine("---------");
-        DisplayPairs(new[] { "ab", "bc", "cd", "de", "ba" });
+       Console.WriteLine("---------");
+        DisplaySymmetricPairs.DisplayPairs(new[] { "ab", "bc", "cd", "de", "ba" });
         // ba & ab
         Console.WriteLine("---------");
-        DisplayPairs(new[] { "ab", "ba", "ac", "ad", "da", "ca" });
+        DisplaySymmetricPairs.DisplayPairs(new[] { "ab", "ba", "ac", "ad", "da", "ca" });
         // ba & ab
         // da & ad
         // ca & ac
         Console.WriteLine("---------");
-        DisplayPairs(new[] { "ab", "ac" }); // No pairs displayed
+        DisplaySymmetricPairs.DisplayPairs(new[] { "ab", "ac" }); // No pairs displayed
         Console.WriteLine("---------");
-        DisplayPairs(new[] { "ab", "aa", "ba" });
+        DisplaySymmetricPairs.DisplayPairs(new[] { "ab", "aa", "ba" });
         // ba & ab
         Console.WriteLine("---------");
-        DisplayPairs(new[] { "23", "84", "49", "13", "32", "46", "91", "99", "94", "31", "57", "14" });
+        DisplaySymmetricPairs.DisplayPairs(new[] { "23", "84", "49", "13", "32", "46", "91", "99", "94", "31", "57", "14" });
         // 32 & 23
         // 94 & 49
         // 31 & 13
-
+ 
         // Problem 2: Degree Summary
         // Sample Test Cases (may not be comprehensive) 
         Console.WriteLine("\n=========== Census TESTS ===========");
-        Console.WriteLine(string.Join(", ", SummarizeDegrees("census.txt")));
+        Degrees.Run();
+        // Console.WriteLine(string.Join(", ", SummarizeDegrees("census.txt")));
         // Results may be in a different order:
         // <Dictionary>{[Bachelors, 5355], [HS-grad, 10501], [11th, 1175],
         // [Masters, 1723], [9th, 514], [Some-college, 7291], [Assoc-acdm, 1067],
@@ -39,16 +110,16 @@ public static class SetsAndMapsTester {
         // Problem 3: Anagrams
         // Sample Test Cases (may not be comprehensive) 
         Console.WriteLine("\n=========== Anagram TESTS ===========");
-        Console.WriteLine(IsAnagram("CAT", "ACT")); // true
-        Console.WriteLine(IsAnagram("DOG", "GOOD")); // false
-        Console.WriteLine(IsAnagram("AABBCCDD", "ABCD")); // false
-        Console.WriteLine(IsAnagram("ABCCD", "ABBCD")); // false
-        Console.WriteLine(IsAnagram("BC", "AD")); // false
-        Console.WriteLine(IsAnagram("Ab", "Ba")); // true
-        Console.WriteLine(IsAnagram("A Decimal Point", "Im a Dot in Place")); // true
-        Console.WriteLine(IsAnagram("tom marvolo riddle", "i am lord voldemort")); // true
-        Console.WriteLine(IsAnagram("Eleven plus Two", "Twelve Plus One")); // true
-        Console.WriteLine(IsAnagram("Eleven plus One", "Twelve Plus One")); // false
+        Console.WriteLine(AnagramTester.IsAnagram("CAT", "ACT")); // true
+        Console.WriteLine(AnagramTester.IsAnagram("DOG", "GOOD")); // false
+        Console.WriteLine(AnagramTester.IsAnagram("AABBCCDD", "ABCD")); // false
+        Console.WriteLine(AnagramTester.IsAnagram("ABCCD", "ABBCD")); // false
+        Console.WriteLine(AnagramTester.IsAnagram("BC", "AD")); // false
+        Console.WriteLine(AnagramTester.IsAnagram("Ab", "Ba")); // true
+        Console.WriteLine(AnagramTester.IsAnagram("A Decimal Point", "Im a Dot in Place")); // true
+        Console.WriteLine(AnagramTester.IsAnagram("tom marvolo riddle", "i am lord voldemort")); // true
+        Console.WriteLine(AnagramTester.IsAnagram("Eleven plus Two", "Twelve Plus One")); // true
+        Console.WriteLine(AnagramTester.IsAnagram("Eleven plus One", "Twelve Plus One")); // false
 
         // Problem 4: Maze
         Console.WriteLine("\n=========== Maze TESTS ===========");
@@ -60,7 +131,7 @@ public static class SetsAndMapsTester {
         maze.MoveRight();
         maze.MoveRight(); // Error
         maze.MoveDown();
-        maze.MoveDown();
+        maze.MoveDown();    
         maze.MoveDown();
         maze.MoveRight();
         maze.MoveRight();
@@ -90,123 +161,6 @@ public static class SetsAndMapsTester {
     }
 
     /// <summary>
-    /// The words parameter contains a list of two character 
-    /// words (lower case, no duplicates). Using sets, find an O(n) 
-    /// solution for displaying all symmetric pairs of words.  
-    ///
-    /// For example, if <c>words</c> was: <c>[am, at, ma, if, fi]</c>, we would display:
-    /// <code>
-    /// am &amp; ma
-    /// if &amp; fi
-    /// </code>
-    /// The order of the display above does not matter. <c>at</c> would not 
-    /// be displayed because <c>ta</c> is not in the list of words.
-    ///
-    /// As a special case, if the letters are the same (example: 'aa') then
-    /// it would not match anything else (remember the assumption above
-    /// that there were no duplicates) and therefore should not be displayed.
-    /// </summary>
-    /// <param name="words">An array of 2-character words (lowercase, no duplicates)</param>
-    private static void DisplayPairs(string[] words) {
-        // To display the pair correctly use something like:
-        // Console.WriteLine($"{word} & {pair}");
-        // Each pair of words should displayed on its own line.
-    }
-
-    /// <summary>
-    /// Read a census file and summarize the degrees (education)
-    /// earned by those contained in the file.  The summary
-    /// should be stored in a dictionary where the key is the
-    /// degree earned and the value is the number of people that 
-    /// have earned that degree.  The degree information is in
-    /// the 4th column of the file.  There is no header row in the
-    /// file.
-    /// </summary>
-    /// <param name="filename">The name of the file to read</param>
-    /// <returns>fixed array of divisors</returns>
-    /// #############
-    /// # Problem 2 #
-    /// #############
-    private static Dictionary<string, int> SummarizeDegrees(string filename) {
-        var degrees = new Dictionary<string, int>();
-        foreach (var line in File.ReadLines(filename)) {
-            var fields = line.Split(",");
-            // Todo Problem 2 - ADD YOUR CODE HERE
-        }
-
-        return degrees;
-    }
-
-    /// <summary>
-    /// Determine if 'word1' and 'word2' are anagrams.  An anagram
-    /// is when the same letters in a word are re-organized into a 
-    /// new word.  A dictionary is used to solve the problem.
-    /// 
-    /// Examples:
-    /// is_anagram("CAT","ACT") would return true
-    /// is_anagram("DOG","GOOD") would return false because GOOD has 2 O's
-    /// 
-    /// Important Note: When determining if two words are anagrams, you
-    /// should ignore any spaces.  You should also ignore cases.  For 
-    /// example, 'Ab' and 'Ba' should be considered anagrams
-    /// 
-    /// Reminder: You can access a letter by index in a string by 
-    /// using the [] notation.
-    /// </summary>
-    /// #############
-    /// # Problem 3 #
-    /// #############
-    private static bool IsAnagram(string word1, string word2) {
-        // Todo Problem 3 - ADD YOUR CODE HERE
-        return false;
-    }
-
-    /// <summary>
-    /// Sets up the maze dictionary for problem 4
-    /// </summary>
-    private static Dictionary<ValueTuple<int, int>, bool[]> SetupMazeMap() {
-        Dictionary<ValueTuple<int, int>, bool[]> map = new() {
-            { (1, 1), new[] { false, true, false, true } },
-            { (1, 2), new[] { false, true, true, false } },
-            { (1, 3), new[] { false, false, false, false } },
-            { (1, 4), new[] { false, true, false, true } },
-            { (1, 5), new[] { false, false, true, true } },
-            { (1, 6), new[] { false, false, true, false } },
-            { (2, 1), new[] { true, false, false, true } },
-            { (2, 2), new[] { true, false, true, true } },
-            { (2, 3), new[] { false, false, true, true } },
-            { (2, 4), new[] { true, true, true, false } },
-            { (2, 5), new[] { false, false, false, false } },
-            { (2, 6), new[] { false, false, false, false } },
-            { (3, 1), new[] { false, false, false, false } },
-            { (3, 2), new[] { false, false, false, false } },
-            { (3, 3), new[] { false, false, false, false } },
-            { (3, 4), new[] { true, true, false, true } },
-            { (3, 5), new[] { false, false, true, true } },
-            { (3, 6), new[] { false, false, true, false } },
-            { (4, 1), new[] { false, true, false, false } },
-            { (4, 2), new[] { false, false, false, false } },
-            { (4, 3), new[] { false, true, false, true } },
-            { (4, 4), new[] { true, true, true, false } },
-            { (4, 5), new[] { false, false, false, false } },
-            { (4, 6), new[] { false, false, false, false } },
-            { (5, 1), new[] { true, true, false, true } },
-            { (5, 2), new[] { false, false, true, true } },
-            { (5, 3), new[] { true, true, true, true } },
-            { (5, 4), new[] { true, false, true, true } },
-            { (5, 5), new[] { false, false, true, true } },
-            { (5, 6), new[] { false, true, true, false } },
-            { (6, 1), new[] { true, false, false, false } },
-            { (6, 2), new[] { false, false, false, false } },
-            { (6, 3), new[] { true, false, false, false } },
-            { (6, 4), new[] { false, false, false, false } },
-            { (6, 5), new[] { false, false, false, false } },
-            { (6, 6), new[] { true, false, false, false } }
-        };
-        return map;
-    }
-
-    /// <summary>
     /// This function will read JSON (Javascript Object Notation) data from the 
     /// United States Geological Service (USGS) consisting of earthquake data.
     /// The data will include all earthquakes in the current day.
@@ -220,6 +174,8 @@ public static class SetsAndMapsTester {
     /// https://earthquake.usgs.gov/earthquakes/feed/v1.0/geojson.php
     /// 
     /// </summary>
+
+
     private static void EarthquakeDailySummary() {
         const string uri = "https://earthquake.usgs.gov/earthquakes/feed/v1.0/summary/all_day.geojson";
         using var client = new HttpClient();
@@ -231,9 +187,27 @@ public static class SetsAndMapsTester {
 
         var featureCollection = JsonSerializer.Deserialize<FeatureCollection>(json, options);
 
-        // TODO:
-        // 1. Add code in FeatureCollection.cs to describe the JSON using classes and properties 
-        // on those classes so that the call to Deserialize above works properly.
-        // 2. Add code below to print out each place a earthquake has happened today and its magitude.
+        // Add code below to print out each place a earthquake has happened today and its magitude.
+        
+        if (featureCollection?.Features != null)
+        {
+            Console.WriteLine("Daily Earthquake Summary:");
+            Console.WriteLine("-------------------------");
+
+            foreach (var feature in featureCollection.Features)
+            {
+                if (feature.Properties != null)
+                {
+                    Console.WriteLine($"Location: {feature.Properties.Place}");
+                    Console.WriteLine($"Magnitude: {feature.Properties.Mag}");
+                    Console.WriteLine("-------------------------");
+                }
+            }
+        }
+        else
+        {
+            Console.WriteLine("No earthquake data available.");
+        }
+    
     }
 }
